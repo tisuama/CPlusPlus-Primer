@@ -26,7 +26,8 @@ int *&r = p;
 
 3. const引用，称为对常量的引用，表示不能修改它所绑定的对象。
 
-4. 常量引用 -> 常量指针(pointer to const) -> 指针常量(const pointer)
+4. pointer to const: 指向常量的指针
+	 const pinter: 常量指针
 
 ```
 const double pi = 3.14;
@@ -46,6 +47,14 @@ const int sz = get_size(); // 非常量表达式
 
 constexpr修饰指针时限定符仅仅对指针有效，而对指针指向的类型无效。
 ```
-const int* p = nullptr;
-constexpr int* p = nullptr;
+const int* p = nullptr; // p是一个指向常量类型的指针
+constexpr int* q = nullptr; // q是一个指向整数的常量指针
+```
+
+6. 指针、常量和类型的别名
+遇到使用了类型别名的声明语句时，人们往往会尝试替换成原来的样子，这种做法是错误的。
+```
+typedef char* pstring;
+const pstring cstr = 0; // 不要理解成等价于const char* cstr
+const pstring *ps;
 ```
