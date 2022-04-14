@@ -36,8 +36,14 @@ const double *cptr = &pt; //OK
 double dval = 3.14;
 cptr = &dval; // OK
 ```
+5. 顶层const 
+一般用顶层const表示对象本身是一个常量，而用底层const表示指针所指对象是一个常量。
+```
+int *const p1 = &i; // 顶层const
+const int ci = 42;  // 底层const
+```
 
-5. constexpr：指值不会改变，且在编译过程中就能计算得到结果的表达式。
+6. constexpr：指值不会改变，且在编译过程中就能计算得到结果的表达式。
 ```
 const int max_files = 20; // 常量表达式
 const int limit = max_files + 1; // 常量表达式
@@ -51,10 +57,17 @@ const int* p = nullptr; // p是一个指向常量类型的指针
 constexpr int* q = nullptr; // q是一个指向整数的常量指针
 ```
 
-6. 指针、常量和类型的别名
+7. 指针、常量和类型的别名
 遇到使用了类型别名的声明语句时，人们往往会尝试替换成原来的样子，这种做法是错误的。
 ```
 typedef char* pstring;
 const pstring cstr = 0; // 不要理解成等价于const char* cstr
 const pstring *ps;
 ```
+
+#### auto类型说明符
+C++11引入auto类型说明符，让编译器通过初始值来推算变量类型，显然，auto定义的变量必须有初始值。
+
+auto也能在一条语句中声明多个变量，但是初始的基本数据类型必须一致。首先就是使用引用对象作为初始值时，参与对象初始化的起始时引用对象的值。此时编译器以引用对象类型作为auto的类型。
+
+其次，auto一般会忽略掉顶层const，而保留底层const;
