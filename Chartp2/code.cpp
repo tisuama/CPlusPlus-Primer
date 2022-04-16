@@ -18,4 +18,8 @@ int main() {
 	
 	const int& ref_1 = a;
 	const int& ref_2 = 10;
+	
+	// auto
+	const int ci = a, &cr = ci;
+	auto b = ci;
 }
