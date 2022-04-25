@@ -28,7 +28,16 @@ int main() {
 	constexpr int limit = mf + 1;
 	constexpr int* np = nullptr; // const pointer
 	
+	// typedef 
+	typedef char* pstring;
+	const pstring cstr = 0;
+	const pstring *ps;
+	
 	// auto
-	const int c1 = a, &cr = c1;
-	auto b = c1;
+	const int c2 = a, &cr = ci;
+	auto b = c2; // int
+	auto c = cr; // int
+	auto d = &i; // int*
+	auto e = &c2; // const int * // 底层const（对const int取地址是底层const)
+	const auto f = ci; // const int 顶层const需要手动指定
 }
