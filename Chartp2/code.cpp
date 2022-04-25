@@ -16,10 +16,19 @@ int main() {
 	int a = 1;
 	int& ref = a;
 	
-	const int& ref_1 = a;
-	const int& ref_2 = 10;
+	// 底层const
+  int i = 0;
+ 	const int * p2 = &i;	
+	const int* const p3 = p2;
+	// int *p = p3; // ERROR
+	// int &r = ci;	// ERROR
+	
+	// constexpr
+	constexpr int mf = 20;
+	constexpr int limit = mf + 1;
+	constexpr int* np = nullptr; // const pointer
 	
 	// auto
-	const int ci = a, &cr = ci;
-	auto b = ci;
+	const int c1 = a, &cr = c1;
+	auto b = c1;
 }
