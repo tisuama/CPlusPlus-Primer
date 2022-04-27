@@ -1,6 +1,7 @@
 #include <iostream>
 
 int main() {
+	std::cout << "====== Test Starting ======" << std::endl;
 	// const 对象
 	const int x = 0;
 	std::cout << x << std::endl;
@@ -40,4 +41,18 @@ int main() {
 	auto d = &i; // int*
 	auto e = &c2; // const int * // 底层const（对const int取地址是底层const)
 	const auto f = ci; // const int 顶层const需要手动指定
+	auto& g = ci;
+	auto k = ci, &l = i; // k是整数
+	auto &m = ci, *p = &ci; // const int（底层const）
+	// auto&n = i, *p2 = &ci; // ERROR	
+	const auto& z = ci; 
+
+	// decltype
+	const int di = 0, &dj = di;
+	decltype(di) xx = 0; // const int 
+	decltype(dj) yy = xx;// cnst int&
+	// decltype(dj) zz; // ERROR cosnt int &类型必须初始化
+	
+
+	std::cout << "====== Test Complete ======" << std::endl;
 }
