@@ -54,6 +54,13 @@ public:
 	explicit Cat4(const Cat4& orig): age(orig.age) { std::cout << "Call Cat4(const Cat4& orig)" << std::endl; }
 };
 
+class Cat5 {
+public:
+	int age;
+	explicit Cat5(int i): age(i) {}
+	Cat5(const Cat5& orig): age(orig.age) {}
+};
+
 int main() {
 	Cat cat1;
 	Cat cat2 = Cat(); //显式初始化
@@ -88,5 +95,9 @@ int main() {
 	Cat4 cat44(cat4);
 	// 隐式调用，ERROR
 	// Cat4 cat444 = cat4;
+	// std::shared_ptr<int> sp = new int(8); // ERROR
+	//
+	Cat5 cat5(1);
+	Cat5 cat55 = 1;
 }
 

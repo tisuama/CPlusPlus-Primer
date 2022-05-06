@@ -39,5 +39,27 @@ int main() {
 #### 如果定义数组时提供了初始值列表，那么未定义的元素先进行零初始化，如果元素是类类型，则再执行默认构造函数。
 #### 如果定义数组是为提供初始化列表，则每个元素默认初始化。
 
+#### explicit 禁止的两种隐式类型转换
 
+1. 通过一个实参调用构造函数从构造函数参数类型转向类类型的隐式转换
+2. 拷贝构造函数定义用一个对象初始化另一个对象的隐式类型转换
+```c++
+#include <iostream>
+// Cat提供两个构造函数
+class Cat {
+ public:
+    int age;
+    // 接收一个参数的构造函数定义了从int型向类类型隐式转换的规则, explicit关键字可以组织这种转换
+    Cat(int i) : age(i) {}
+    // 拷贝构造函数定义了从一个对象初始化另一个对象的隐式转换
+    Cat(const Cat &orig) : age(orig.age) {}
+};
+int main() {
+    Cat cat1 = 10;    // 类型1
+    Cat cat2 = cat1;  // 类型2
+    std::cout << cat1.age << std::endl;
+    std::cout << cat2.age << std::endl;
+    return 0;
+}
+```
 
