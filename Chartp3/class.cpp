@@ -98,6 +98,6 @@ int main() {
 	// std::shared_ptr<int> sp = new int(8); // ERROR
 	//
 	Cat5 cat5(1);
-	Cat5 cat55 = 1;
+	// Cat5 cat55 = 1;
 }
 
