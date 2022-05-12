@@ -18,7 +18,7 @@ int main() {
 	int& ref = a;
 	
 	// 底层const
-  int i = 0;
+    int i = 0;
  	const int * p2 = &i;	
 	const int* const p3 = p2;
 	// int *p = p3; // ERROR
