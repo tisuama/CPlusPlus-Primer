@@ -63,3 +63,27 @@ int main() {
 }
 ```
 
+#### 移动构造的几种情况
+
+1. 使用`std::move(something)`初始化
+2. 使用`std::forward<T>(something)`而且T是左值引用类型来初始化
+3. 使用临时对象初始化
+4. 返回函数的局部变量
+```c++
+a RetByValue() {
+	a obj;
+	return obj;
+}
+
+void TakeByValue(a);
+
+int main() {
+	a a1;
+	a a2 = a1;// COPY ctor
+	a a3 = std::move(a1); // move ctor
+	TakeByValue(std::move(a2); // move ctor
+
+	a a4 = RetByValue(); // May call move ctor, or no ctor
+	a1 = RetByValue(); // Call move assign, a::operator=(a&&)
+}
+```
