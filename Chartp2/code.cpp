@@ -39,7 +39,9 @@ int main() {
 	auto b = c2; // int
 	auto c = cr; // int
 	auto d = &i; // int*
+	// 容易忽视
 	auto e = &c2; // const int * // 底层const（对const int取地址是底层const)
+	*e = 2; 	  // ERROR
 	const auto f = ci; // const int 顶层const需要手动指定
 	auto& g = ci;
 	auto k = ci, &l = i; // k是整数

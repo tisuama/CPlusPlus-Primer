@@ -36,5 +36,16 @@ int* a2 = a;  // OK
 
 理解复杂数组声明：
 ```c++
-int *(&array)[10] = ptrs; // arry是数组的引用，该数组含有10个指针
+int *ptrs[10];   // OK, ptrs是含有10个整形指针的数组
+int& refs[10]; 	 // ERROR, 不存在引用的数组	
+int *(&array)[10] = ptrs; // OK, arry是数组的引用，该数组含有10个指针
+int (*parray)[10] = &array; // OK
+int (&arrref)[10] = arr; 	// OK
+```
+
+数组还有一个特性：很多用到数组名字的地方，编译器都会自动将其替换为一个指向数组首元素的指针。
+```c++
+string names[] = {"one", "two", "three"};
+string* p = &names[0];
+string* p2 = names; // 等价于&names[0];
 ```
