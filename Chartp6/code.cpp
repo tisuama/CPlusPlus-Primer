@@ -24,6 +24,18 @@ int (*func(int i))[10] {
 	return &val;
 }
 
+constexpr int new_sz() {
+	return 42;
+}
+
+constexpr size_t scale(size_t cnt) { 
+	return new_sz() * cnt; 
+}
+
+int add(int a, int b) {
+	return a + b;
+}
+
 int main() {
 	for (size_t i = 0; i < 10; i++) {
 		std::cout << count_call() << std::endl;
@@ -38,5 +50,19 @@ int main() {
 	
 	// 不能拷贝
 	int (*ptr)[10] = func(10);
-	std::cout << ptr << " " << (*ptr)[5] << std::endl;
+	std::cout << ptr << " " << (*ptr)[5] << " " << *(*ptr + 5) << std::endl;
+	
+	int ia[] = {0, 1, 2, 3, 4, 5};
+	int *pp = &ia[2];
+	std::cout << pp[1] << " " << pp[-2] << std::endl;	
+
+	// constexpr
+	int A[new_sz()];
+	
+	int arr[scale(2)];
+	int cnt;
+	int a3[cnt];
+	std::cout << a3[1] << std::endl;
+	
+	assert(0);
 }

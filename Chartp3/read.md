@@ -49,3 +49,16 @@ string names[] = {"one", "two", "three"};
 string* p = &names[0];
 string* p2 = names; // 等价于&names[0];
 ```
+
+下标和指针
+对数组执行下标运算其实就是对指向数据元素的指针执行下标运算。
+```c++
+int ia[] = {0, 2, 3, 6, 8};
+int i = ia[2];  
+int *p = ia; 	// 指向ia首元素
+i = *(p + 2);	// 等价于i = ia[2];
+int *p = &ia[2];
+int j = p[1];
+int k = p[-2];	// 负值索引
+```
+
