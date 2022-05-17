@@ -36,6 +36,10 @@ int add(int a, int b) {
 	return a + b;
 }
 
+decltype(add)* GetFun() {
+	return &add;
+}
+
 int main() {
 	for (size_t i = 0; i < 10; i++) {
 		std::cout << count_call() << std::endl;
@@ -63,6 +67,9 @@ int main() {
 	int cnt;
 	int a3[cnt];
 	std::cout << a3[1] << std::endl;
+	
+	auto f = GetFun();
+	std::cout << (*f)(2, 3) << std::endl;
 	
 	assert(0);
 }

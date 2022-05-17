@@ -151,3 +151,13 @@ bool b1 = pf("hello", "goodbay");
 bool b2 = (*pf)("hello'， "goodbay");
 bool b3 = lengthCompare("hello", "goodbay");
 ```
+
+#### 使用auto和decltype用于函数指针
+
+```c++
+string::size_type sumLength(const string&, const string&)
+
+decltype(sumLength)* getFunc(const string&);
+```
+
+当decltype作用于某个函数时，它返回函数类型而非指针类型。因此我们显示的加上*表示我们需要返回指针，而非函数本身。
