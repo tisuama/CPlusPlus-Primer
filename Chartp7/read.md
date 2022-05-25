@@ -53,4 +53,27 @@ std::string Sales_data::isbn(const Sales_data* const this) {
 #### 类的成员函数初探
 在类中，常有一些规模较小的函数适合于被声明称内联函数，定义在类内部的成员函数时自动inline的。
 
+#### 可变数据成员
+可变数据成员（mutable data member)永远不会是const，即使它是const对象的成员。因此一个const长远函数可以改变一个可变成员变量的值。
+
+```c++
+class Screen {
+public:
+	void some_member() const;
+private:
+	mutable size_t access_ctr;
+};
+
+void Screen::some_member() const {
+	++access_ctr;
+}
+```
+
+#### 返回*this的成员函数
+```c++
+auto display() const {
+	return *this; //  返回常量引用
+}
+```
+
 

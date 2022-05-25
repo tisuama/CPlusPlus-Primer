@@ -33,15 +33,32 @@ private:
 	std::string  bookNo;
 	unsigned units_sold = 0;	
 	double revenue = 0.0;
+	mutable size_t access_ctr;
 };
 
-int Add(int x, int y) {
+constexpr int Add(int x, int y) {
 	return x + y;
 }
+
+class Screen {
+public:
+	Screen& display(std::ostream& os) { do_display(os); return *this; }
+	const Screen& display(std::ostream& os) const { do_display(os); return *this; }
+	
+private:
+	void do_display(std::ostream& os) const { os << "haha"; }
+};
+
 
 int main() {
 	Sales_data total;
 	// total.combine(trans); // 等价于返回total的引用
-	int x, y;
-	constexpr int z = Add(x, y);
+	// constexpr 
+	int x = 1, y = 2;
+	constexpr int z = Add(1, 2);
+	
+
+	// Screen 
+	Screen s;	
+	s.display(std::cout);
 }
