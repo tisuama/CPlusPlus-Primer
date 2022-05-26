@@ -84,7 +84,7 @@ class Screen
 
 #### 友元再探
 
-除了将普通函数定义称友元，还可以吧其他的类定义成有元，也可以吧其他类的成员函数定义成友元。
+除了将普通函数定义称友元，还可以吧其他的类定义成友元，也可以吧其他类的成员函数定义成友元。
 当把一个成员函数声明成友元时，必须指出该成员属于哪个类。
 ``c++
 class Screen {
@@ -92,5 +92,36 @@ class Screen {
 };
 ```
 
+即使在类内部定义友元函数，也必须在类外提供相应的声明从而使得函数可见。
+```c++
+strcut X {
+	friend void f() { /* 可以定义在类内部*/ }
+	X() { f(); }
+	void g();
+	void h();
+};
+
+void X::g() { return f(); } // ERROR，友元函数f还未声明
+void f(); // 声明该友元函数
+void X::h() { return f(); } // OK
+```
 
 
+#### 类的作用域
+每个类都会定义自己的作用域。在该类的作用域之外，普通的数据和函数成员只能由对象、引用或者指针使用成员访问运算符来访问。
+
+对于定义在类内部的成员函数来说，首先编译成员的声明，知道类全部可见后才编译函数体。
+
+#### 构造函数初始值列表
+有时候可以忽略数据成员函数初始化和赋值之间的差异，但是并非总是这样，如果是const或者引用的话，必须将其初始化。
+
+#### 委托构造函数
+C++11扩展了构造函数初始值功能，使得我们可以定义所谓的委托构造函数（delegating constructor)。在委托构造函数内，成员初始值列表只有唯一一个入口，就是类名本身。
+```c++
+class Sales_data {
+public:
+	Sales_data(std::string s, unsigned cnt, double price) : bookNo(s), units_slod(cnt), revenue(cnt * private) {}
+	Sales_data(): Sales_data("", 0, 0) {}
+	Sales_data(std::string): Sales_data(s, 0, 0) {}
+};
+```
