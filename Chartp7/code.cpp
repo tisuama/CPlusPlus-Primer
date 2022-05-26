@@ -36,7 +36,7 @@ private:
 	mutable size_t access_ctr;
 };
 
-constexpr int Add(int x, int y) {
+constexpr int constexpr_add(int x, int y) {
 	return x + y;
 }
 
@@ -47,16 +47,17 @@ public:
 	
 private:
 	void do_display(std::ostream& os) const { os << "haha"; }
+	std::string contents;
 };
 
+// 有元声明
 
 int main() {
 	Sales_data total;
 	// total.combine(trans); // 等价于返回total的引用
 	// constexpr 
 	int x = 1, y = 2;
-	constexpr int z = Add(1, 2);
-	
+	constexpr int z = constexpr_add(1, 2);
 
 	// Screen 
 	Screen s;	
