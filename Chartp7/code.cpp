@@ -50,7 +50,39 @@ private:
 	std::string contents;
 };
 
-// 有元声明
+// delegating constructor
+class Sales_data2 {
+public:
+	Sales_data2(std::string s, unsigned cnt, double price) : bookNo(s), units_slod(cnt), revenue(cnt * price) {}
+	Sales_data2(): Sales_data2("", 0, 0) {}
+	Sales_data2(std::string s): Sales_data2(s, 0, 0) { std::cout << "Sales_data2 constructor" << std::endl; }
+	
+	Sales_data2& combine(Sales_data2 s) {
+		revenue += s.revenue;
+		return *this;
+	}
+
+private:
+	std::string bookNo;
+	unsigned units_slod;
+	double revenue;
+};
+
+// 非成员函数不能声明成const
+/*
+int add(int a, int b) const {
+	std::cout << a + b << std::endl;
+	return a + b;
+}
+*/
+
+class Account {
+public:
+	void calculate() { amount += amount * interestRate; }		
+private:
+	static constexpr double interestRate {2}; 
+	double amount;
+};
 
 int main() {
 	Sales_data total;
@@ -62,4 +94,13 @@ int main() {
 	// Screen 
 	Screen s;	
 	s.display(std::cout);
+
+	// 隐式类型转换
+	std::string null_book = "9-999-9999-9";
+	Sales_data2 item("haha", 0, 0);
+	item.combine(null_book);	 // OK
+
+	Sales_data2 item2 = null_book;
+
+	Account a1;	
 }
