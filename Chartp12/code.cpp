@@ -54,4 +54,13 @@ int main() {
 	StrBlob b{"1", "2", "3"};
 	std::cout << b.size() << std::endl;
 	// std::cout << b.front() << std::endl;
+	//
+	// new
+	int* pi = new int(1024);
+	std::string* ps = new std::string(10, '9');
+	std::vector<int> *pv = new std::vector<int>{0, 1, 2, 3};
+	int* pi1 = new int;  // 默认初始化，*pi1的值未定义
+	int* pi2 = new int(); // 值初始化为0，*pi2的值为0
+	std::cout << *pi1 << " " << *pi2 << std::endl;
+	
 }
