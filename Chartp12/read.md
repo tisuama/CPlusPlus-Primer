@@ -51,3 +51,33 @@ const int* pi = new const int(1024);
 int* p1 = new int; // 如果分配失败，抛出bad_alloc异常
 int* p2 = new (nothrow) int; // 如果分配失败，返回空指针。
 ```
+
+#### shared_ptr和new结合使用
+如果我们不初始化一个智能指针，它就会被初始化为一个空指针。
+```c++
+shared_ptr<double> p1;
+shared_ptr<int> p2(new int(42));
+```
+
+不能将一个内置指针隐式转换成一个智能指针。
+```c++
+shared<int> clone(int p) {
+	return new int(p); // ERROR，不能隐式转换
+}
+
+
+p.reset(q, d); //使用reset来将一个新的指针赋予一个shared_ptr。
+p = new int(1024); // ERROR
+p.reset(new int(1024)); // OK
+```
+
+#### 智能指针与异常
+```c++
+void f() {
+	shared_ptr<int> sp(new int(42));
+	// 此段代码抛出一个异常，且在f中未被捕获
+    // 使用智能指针可以正确的释放内存
+}
+
+函数退出有两种可能，正常处理结束或者发生了异常。无论哪种情况，拒不对象都会被销毁。
+```
