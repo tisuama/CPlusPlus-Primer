@@ -62,5 +62,20 @@ int main() {
 	int* pi1 = new int;  // 默认初始化，*pi1的值未定义
 	int* pi2 = new int(); // 值初始化为0，*pi2的值为0
 	std::cout << *pi1 << " " << *pi2 << std::endl;
+
+
+	// shared_ptr
+	std::unique_ptr<int> p(new int(32));
+	std::shared_ptr<int> pp(p.release());
+	assert(p == nullptr);
+	std::cout << *pp << std::endl;
 	
+
+	// unique_ptr
+	std::unique_ptr<std::string> p0(new std::string("haha"));	
+	std::unique_ptr<std::string> p2(p0.release());
+	std::unique_ptr<std::string> p3(new std::string("test"));
+	p2.reset(p3.release());
+	assert(p3 == nullptr);
+	std::cout << *p2 << std::endl;
 }

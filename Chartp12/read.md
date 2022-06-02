@@ -1,6 +1,6 @@
 ## Chartp12 动态内存与智能指针
 
-#### shared_ptr类
+### shared_ptr类
 智能指针也是模板，使用方式与普通指针类似。解引用一个智能指针返回它指向的对象。
 支持操作如下：
 ```c++
@@ -16,6 +16,12 @@ p.swap(q);
 p = q; // p、q都是shared_ptr，此操作会递减p的引用计数、递增q的引用计数；若p的引用计数变成0，则将其管理的内存释放
 
 p.user_count(); // 返回共享对象的智能指针数量
+```
+定义和改变shared_ptr的其他用法
+```c++
+shared_ptr<T> p(q); // q必须为new分配的内存
+shared_ptr<T> p(u); // p从unqieu_ptr u那里接管了对象的所有权；将u置空
+shared_ptr<T> p(q, d); // p接管了内置指针q所指向对象的所有权。p将使用可调用对象d来代替delete
 ```
 
 #### 使用动态生存期的资源类
@@ -70,6 +76,7 @@ p.reset(q, d); //使用reset来将一个新的指针赋予一个shared_ptr。
 p = new int(1024); // ERROR
 p.reset(new int(1024)); // OK
 ```
+p.reset(); 若p是唯一指向其对象的shared_ptr，reset会释放此对象。
 
 #### 智能指针与异常
 ```c++
@@ -80,4 +87,45 @@ void f() {
 }
 
 函数退出有两种可能，正常处理结束或者发生了异常。无论哪种情况，拒不对象都会被销毁。
+```
+
+### unique_ptr
+一个`unique_ptr`拥有它所指向的对象。与shared_ptr不同，某个时刻智能有一个unique_ptr指向一个给定对象。当unique_ptr销毁时，它所指向的对象也被销毁。
+ 
+```c++
+unique_ptr<double> p1; // OK，可以指向double的unique_ptr
+unique_ptr<int> p2(new int(42)); //OK
+```
+由于unique_ptr拥有它指向的对象，因此unique_ptr不支持普通的$拷贝$或者$赋值$。
+```c++
+unique_ptr<string> p1(new string("unique_ptr"));
+unique_ptr<string> p2(p1); // ERROR，禁止拷贝
+unique_ptr<string> p3; 
+p3 = p2; // ERROR，禁止赋值
+```
+
+unique_ptr支持的操作：
+```c++
+
+unique_ptr<T> u1;  // 空的uniqur_ptr
+unique_ptr<T, D> u2;
+
+u = nullptr; // 释放u所指向的对象
+u.release(); // 放弃对指针的控制权，返回指针，并将u置空
+u.reset();   // 释放u指向的对象
+u.reset(nullptr); // 如果提供了内置指针去，则令u指向这个对象，否则将u置空
+```
+
+#### 传递unique_ptr参数和返回unique_ptr
+不能拷贝unqiue_ptr的规则有一个例外，我们可以拷贝或者赋值一个将要被销毁的unique_ptr。
+```c++
+unqieu_ptr<int> clone(int p) {
+	return unqieu_ptr<int>(new int (p)); // OK
+}
+
+// 还可以返回局部对象的拷贝
+unqieu_ptr<int> clone(int p) {
+	unique_ptr<int> ret(new int(p));
+	return ret; // OK
+}
 ```
