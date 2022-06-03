@@ -129,3 +129,19 @@ unqieu_ptr<int> clone(int p) {
 	return ret; // OK
 }
 ```
+
+#### weak_ptr
+weak_ptr是一种不控制所指对象生存期的智能指针。它指向一个shared_ptr管理的对象，但是不会改变weak_ptr的引用计数。一旦最后一个指向对象的shared_ptr被销毁，对象就会被释放，即使有weak_ptr对象。
+
+```c++
+weak_ptr<T> w; // 空weak_ptr
+weak_ptr<T> w(sp); // 与shared_ptr sp指向相同对象的weak_ptr
+w.reset(); // 将w置空
+w.lock();  // 如果expired为true，返回一个空shared_ptr，否则返回一个指向w的对象的shared_ptr。
+```
+由于对象可能不存在，所以我们不能直接使用weak_ptr访问对象，而必须使用lock。
+```c++
+if (shared_ptr<int> np = wp.lock()) {
+	// do something
+}
+```

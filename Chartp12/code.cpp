@@ -2,8 +2,7 @@
 #include <memory>
 #include <vector>
 
-class StrBlob {
-public:
+class StrBlob { public:
 	typedef std::vector<std::string>::size_type size_type;
 	StrBlob();
 	StrBlob(std::initializer_list<std::string> il);
@@ -40,6 +39,24 @@ void StrBlob::pop_back() {
 	data->pop_back();
 }
 
+struct Foo {
+	Foo() { std::cout << "Foo ctor" << std::endl; }
+	Foo(const Foo&) { std::cout << "Foo copy ctor " << std::endl; }
+	Foo(Foo&&) { std::cout << "Foo move ctor" << std::endl; }
+	~Foo() { std::cout << "~Foo dtor" << std::endl; }
+};
+
+struct D { // 删除器
+	D() { std::cout << "D default ctor" << std::endl; }
+	D(const D&) { std::cout << "D copy ctor" << std::endl; }
+	D(D&) { std::cout << "D non-copy ctor" << std::endl;}
+	D(D&&) { std::cout << "D move ctor" << std::endl; }
+	void operator() (Foo* p) const {
+		std::cout << "D is deleting Foo" << std::endl;
+		delete p;
+	}
+};
+
 int main() {
 	std::shared_ptr<std::string> p1;
 	if (p1 && p1->empty()) {
@@ -59,16 +76,17 @@ int main() {
 	int* pi = new int(1024);
 	std::string* ps = new std::string(10, '9');
 	std::vector<int> *pv = new std::vector<int>{0, 1, 2, 3};
-	int* pi1 = new int;  // 默认初始化，*pi1的值未定义
+	int* pi1 = new int;   // 默认初始化，*pi1的值未定义
 	int* pi2 = new int(); // 值初始化为0，*pi2的值为0
 	std::cout << *pi1 << " " << *pi2 << std::endl;
 
 
 	// shared_ptr
 	std::unique_ptr<int> p(new int(32));
-	std::shared_ptr<int> pp(p.release());
+	// shared_ptr(unique_ptr&& T)
+	std::shared_ptr<int> sp(std::move(p));
 	assert(p == nullptr);
-	std::cout << *pp << std::endl;
+	std::cout << *sp << std::endl;
 	
 
 	// unique_ptr
@@ -78,4 +96,21 @@ int main() {
 	p2.reset(p3.release());
 	assert(p3 == nullptr);
 	std::cout << *p2 << std::endl;
+	
+	D d;
+	{
+		std::cout << "== test 1 ==" << std::endl;
+		std::unique_ptr<Foo, D> up3(new Foo, d);
+		// 引用d本身，需要注意作用域
+		std::unique_ptr<Foo, D&> up4(new Foo, d);
+	}
+	{
+		std::cout << "== test 2 ==" << std::endl;
+		std::unique_ptr<Foo, D> up5(new Foo, D());
+	}
+	{
+		std::cout << "== test 3 ==" << std::endl;
+		std::unique_ptr<Foo, D&> up6(new Foo, d);
+		std::unique_ptr<Foo, D> up7(std::move(up6));
+	}
 }
