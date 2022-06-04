@@ -145,3 +145,67 @@ if (shared_ptr<int> np = wp.lock()) {
 	// do something
 }
 ```
+
+### 动态数组
+new和数组
+```c++
+int* pia = new int[get_size()]; // get_size()必须是整形，但是不必要时常量
+
+typedef int arrT[42];  // arrT表示42个int的数组类型
+int* p = new arrT;
+```
+
+初始化动态分配对象的数组。
+```c++
+int* pia = new int[10]; // 10个未初始化的int
+int* pia2 = new int[10](); // 10个值初始化的为0的int
+string* psa = new std::string[10]; // 10个空string
+string* psa2 = new std::string[10]();
+```
+
+C++11中，我们可以提供一个元素的初始化器的花括号列表：
+```c++
+int* psa3 = new int[10]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+```
+如果初始化数目小于元素数目，剩余元素将进行值初始化；如果初始化器数据大于元素数据，则new表达式是把你，不会分配任何内存。会抛出一个类型为`bad_array_new_length`的异常。
+
+我们不能定义一个长度为0的静态数据对象，但是当n为0时，调用new[n]是合法的。
+```c++
+char arr[0]; // ERROR
+char* cp = new char[0]; // OK，但是不能解引用
+```
+
+#### 智能指针和动态数组
+标注库提供了可以管理new分配的数组的unique_ptr版本。
+```c++
+unique_ptr<int[]> p(new int[10]); // 自动调用delete[] ;
+```
+当一个unique_ptr指向一个数组时，我们可以使用下标运算符来访问数组中的元素。
+```c++
+for (size_t i = 0; i != 10; i++) {
+	p[i] = i;  // OK
+}
+```
+
+与unique_ptr不同，shared_ptr不支持管理动态数组。如果希望使用shared_ptr管理一个动态数组，必须提供自己定义的删除器。
+```c++
+shared_ptr<int> sp(new int[10], [](int* p) { delete [] p; });
+sp.reset();
+```
+
+#### allocator类
+new灵活性上有一定局限，它将内存的分配和对象的构造组合在一起。
+
+allocator定义与memory中，它帮助我们将内存分配和对象构造分离开。
+```c++
+allocator<string> alloc;
+auto const p = alloc.allocate(n);
+```
+allocator分配的内存是未构造的(unconstructed)。我们需要按需在内存中构造对象。
+```c++
+auto q = p;
+alloc.construct(q++);
+alloc.construct(q++, 10, 'c');
+alloc.construct(q++, "hi");
+```
+还未构造对象的情况下就使用原始内存是错误的。

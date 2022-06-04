@@ -113,4 +113,8 @@ int main() {
 		std::unique_ptr<Foo, D&> up6(new Foo, d);
 		std::unique_ptr<Foo, D> up7(std::move(up6));
 	}
+	
+	// 动态数组
+	std::shared_ptr<int> p10(new int[10], [](int* p) { delete [] p; });
+	p10.reset();
 }
