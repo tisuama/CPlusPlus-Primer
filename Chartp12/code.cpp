@@ -8,7 +8,7 @@ class StrBlob { public:
 	StrBlob(std::initializer_list<std::string> il);
 	size_type size() const { return data->size(); }
 	bool empty() const { return data->empty(); }
-	void push_back(const std::string & t) { data->push_back(t); }
+	void push_back(const std::string& t) { data->push_back(t); }
 	void pop_back();
 	std::string& front();
 	std::string& back();
