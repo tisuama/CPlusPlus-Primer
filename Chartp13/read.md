@@ -119,6 +119,3 @@ HasPtr& HasPtr::operator=(HasPtr rhs) {
 	return *this;
 }
 ```
-
-### 拷贝控制示例
-
