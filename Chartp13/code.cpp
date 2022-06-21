@@ -100,4 +100,12 @@ int main() {
 	s.set_value(1, 20);
 	Sales_data cs(s);
 	std::cout << cs.get_value(1) << std::endl;
+
+	// 右值引用
+	int i = 42;
+	int& r = i;
+	// int&& rr = i; //ERROR
+	// int& r2 = i * 42; // ERROR
+	const int& r3 = i * 42;
+	int&& rr2 = i * 42;
 }
