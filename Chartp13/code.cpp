@@ -31,7 +31,7 @@ private:
 class HasPtr {
 public:
 	HasPtr(const std::string& s = std::string()): ps(new std::string(s)), i(0) {}
-	HasPtr(const HasPtr & p): ps(new std::string(*p.ps)), i(p.i) {}
+	HasPtr(const HasPtr& p): ps(new std::string(*p.ps)), i(p.i) {}
 	// 如果定义了swap函数的前提下拷贝赋值运算符的写法
 	HasPtr& operator=(HasPtr ptr) { swap(ptr, *this); return *this; }
 	friend void swap(HasPtr&, HasPtr&);	
