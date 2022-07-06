@@ -273,11 +273,21 @@ auto n = (s1 + s2).find('a');
 ```c++
 class Foo {
 public: 
-	Foo& operator=(const Foo&) &;
+	Foo& operator=(const Foo&) &; // 指向可修改的左值赋值
 };
 ```
 综合引用限定符和const来区分一个成员函数的重载版本。
 对于&限定的函数，我们只能将它用于左值；对于&&限定的函数，只能用于右值。
+```c++
+Foo& retFoo();  // 返回一个引用
+Foo retVal();   // 返回一个值
+
+Foo i, j;
+i = j; 			// OK
+retFoo() = j;	// OK
+retVal() = j;   // ERROR
+i = retVal(); 	// OK
+```
 ```c++
 class Foo {
 public:
