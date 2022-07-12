@@ -124,3 +124,16 @@ double undiscounted = baseP->Quote::net_price(42);
 纯虚函数(pure virtual)函数告诉用户当前函数没有意义，无需定义。
 含有纯虚函数的类是抽象基类(abstract base class)。抽象基类负责定义接口，而后续其他类可以覆盖该接口，我们不能直接创建一个抽象基类对象。
 
+#### 有元与继承
+就像有元关系不能传递一样，有元关系也不能继承。基类的有元访访问派生类成员时不具有特殊性，类似的，派生类的有元也不能随意访问基类成员。
+```c++
+class Base {
+	friend class Pal;
+};
+class Pal {
+public:
+	int f(Base b) { return b.prot_mem; }  // OK
+	int f2(Sneaky s) { return s.j; } 	  // ERR, Pal不是Sneaky的有元
+	int f3(Sneaky s) { return s.prot_mem; } ;// OK pal是base的有元
+};
+```
