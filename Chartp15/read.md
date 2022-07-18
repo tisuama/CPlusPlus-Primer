@@ -140,3 +140,67 @@ public:
 	int f3(Sneaky s) { return s.prot_mem; } ;// OK pal是base的有元
 };
 ```
+
+#### 继承中的类作用域
+当存在继承关系时，派生类的作用域嵌套在其基类的作用域之内。如果一个名字在派生类的作用域内无法正确解析，则编译器继续在外层的基类作用域中寻找该名字的定义。
+
+>	在编译时进行名字查找，一个对象、引用或者指针的静态类型决定了对象的哪些成员时可见的。即使静态类型和动态类型不一致（当使用基类的引用或指针时），但我们能使用哪些成员仍然由静态类型决定。
+
+```c++
+class Disc_quote: public Quote {
+public:
+	std::pair<size_t, double> discount_policy() const {
+		return { quantity, discount};
+	}
+};
+
+Bulk_quote bulk;
+Bulk_quote* bulkP = &bulk; 	// 静态类型与动态类型一致
+Quote* itemP = &bulk;	// 静态类型与动态类型不一致
+bulkP->discount_policy(); // OK
+itemP->discount_policy(); // ERROR
+```
+
+>	和其他作用域一样，派生类也能重新定义在其直接基类或间接基类中的名字，此时定义在内层作用域的名字将隐藏定义在外层作用域的名字。 
+
+#### 名字查找优先于类型检查
+
+>	派生类中的函数不会重载基类中的长远。和其他作用域一样，如果派生类成员与基类成员的某个成员同名，则派生类在其作用域中隐藏该基类成员。即使派生类成员和基类成员的形参列表不一致，基类成员仍然会隐藏。
+```c++
+struct Base {
+	int mmefcn();
+}; 
+struct Derived: Base {
+	int memfcn(int);
+};
+
+Derived d; Base b;
+b.memfcn(); 	// OK
+d.memfcn(10); 	// OK
+d.memfcn();		// ERROR，memfcn被隐藏。一旦memfcn名字找到，编译器就不在继续查找。
+d.Base::mmefcn(); 	// OK
+```
+
+#### 虚函数作用域
+我们现在可以理解为什么基类与派生类中的虚函数必须有相同的形参列表。
+
+```c++
+class Base {
+public:
+	virtual int fcn() { 
+		std::cout << "Base fcn" << std::endl;
+	}
+};
+class D1: public Base {
+public:
+	int fcn(int) {std::cout << "D1 fcn(int) << std::endl; 	// 形参列表与Base中的fcn不一致，仅仅是同名隐藏，但是并没有覆盖
+	virtual void f2() { std::cout << "D1 f2()" << std::endl;
+};
+
+class D2: public D1 {
+public:
+	int fcn(int) { std::cout << "D2 fcn(int) << std::endl; // 非虚函数，隐藏了D1::fcn(int)
+	int fcn() { std::cout << "D2 fcn()" << std::endl;	// 覆盖了Base的虚函数fcn
+	void f2() { std::cout << "D2 f2()" << std::endl;	// 覆盖了D1的f2
+};
+```
