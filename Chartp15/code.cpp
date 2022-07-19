@@ -89,11 +89,15 @@ int main() {
 
 
 	// Base 动态绑定时
+	// 区分多态和非多态，非多态直接使用原始的，多态使用动态类型
 	Base1 bobj; D1 d1obj; D2 d2obj;
 	Base1* bp1 = &bobj, *bp2 = &d1obj, *bp3 = &d2obj;
-	bp1->fcn();
-	bp2->fcn();
-	bp3->fcn();
+	bp1->fcn(); // OK
+	bp2->fcn(); // OK
+	bp3->fcn(); // OK
+	// d1obj.fcn(); // ERROR
+	// D1* d1ptr = &d1obj;
+	// d1ptr->fcn(); // ERROR
 
 	D1* d1p = &d1obj; D2* d2p = &d2obj;
 	// bp2->f2(); // ERROR
