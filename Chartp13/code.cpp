@@ -92,6 +92,16 @@ inline void swap(HasPtr1& lhs, HasPtr1& rhs) {
 	swap(lhs.i, rhs.i);
 }
 
+class B {
+public:
+	B() {}
+	// B(const B&) = delete;
+};
+
+class DD: public B {
+	// 	
+};
+
 int main() {
 	D d;
 	d = D(1);
@@ -108,4 +118,9 @@ int main() {
 	// int& r2 = i * 42; // ERROR
 	const int& r3 = i * 42;
 	int&& rr2 = i * 42;
+
+
+	DD dd;
+	DD d2(dd);
+	DD d3(std::move(dd));
 }
