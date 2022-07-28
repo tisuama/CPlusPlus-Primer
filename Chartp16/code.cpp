@@ -22,9 +22,18 @@ int compare1(const T& v1, const T& v2) {
 	return 0;
 }
 
+int print(std::initializer_list<int>& il) {
+	for (auto x : il) {
+		std::cout << "il "  << x << std::endl;
+	}
+	return 0;
+}
+
 int main() {
 	// std::cout << compare(1, 2) << std::endl;
 	std::cout << compare("haha", "hehe") << std::endl;
 	std::cout << compare1(1, 2) << std::endl;
+	std::initializer_list<int> L{1, 2, 3};
+	print(L);
 }
 

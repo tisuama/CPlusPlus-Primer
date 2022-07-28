@@ -55,3 +55,28 @@ intline T min(const T&, const T&);
 
 ## 类模板
 类模板（class template）是用来生成类的蓝图。与函数模板不同之处是，编译器不能为类模板推断模板参数类型。 类模板不是一个类型名。类模板用来实例化类型，而一个实例化的类型总是包含模板参数的。
+
+#### 类模板与成员函数
+与往常一样，当我们在类外定义一个成员时，必须说明成员属于哪个类。
+
+```c++
+template<typename T>
+void Blob<T>::check(size_type i, const std::string& msg) const {
+	if (i >= data->size()) {
+		throw std::out_of_range(msg);	
+	}
+};
+```
+
+#### 类模板成员的实例化
+默认情况下，一个类模板的成员只有当程序使用到它时才进行实例化。
+
+```c++
+Blob<int> blobs = {0, 1, 2, 3, 4};
+for (size_t i = 0; i != blobs.size(); i++) {
+	blobs[i] = i * i;
+}
+```
+这里Blob类只实例化了它和三个成员函数`operator[]`, `size`和接受`initializer_list<int>`的构造函数
+
+>	默认情况下，对于一个实例化了的类模板，其成员只有在使用时才被实例化。
