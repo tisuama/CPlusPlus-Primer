@@ -79,4 +79,61 @@ for (size_t i = 0; i != blobs.size(); i++) {
 ```
 这里Blob类只实例化了它和三个成员函数`operator[]`, `size`和接受`initializer_list<int>`的构造函数
 
->	默认情况下，对于一个实例化了的类模板，其成员只有在使用时才被实例化。
+>	默认情况下，对于一个实例化了的类模板，其成员函数只有在使用时才被实例化。
+
+
+#### 在类代码内简化模板类名的使用
+
+当我们使用一个类模板类型时必须提供模板实参，但这一规则有一个例外。在类模板自己的作用域中，我们可以直接使用模板名儿不提供实参。
+
+```c++
+template<typename T>
+class BlobPtr {
+public:
+	BlobPtr(): curr(0) {}
+	// 注意这里是Blob
+	BlobPtr(Blob<T> &a, size_t sz = 0):
+		wptr(a.data), curr(sz) { }
+	
+ 	// 前置递增和递减，这里BlobPtr等价于BlobPtr<T>
+	BlobPtr& operator++();
+	BlobPtr& operator--();
+};
+```
+当我们在类模板外定义其成员时，必须记住，我们并不在类的作用域中，知道遇到类名才表示进入类的作用域。
+
+#### 模板类型的别名
+类模板的一个实例定义了一个类类型，与任何其他类一样，我们可以定义typedef来引用实例化的类。
+```c++
+typedef Blob<string> StrBlob;
+```
+
+由于模板不是一个类型，我们不能定义typedef 引用一个模板。即：无法定义一个typedef引用Blob<T>
+
+#### 类模板的static成员
+```c++
+template<typename T>
+class Foo{
+public:
+	static std::size_t count() { return ctr;}
+private:
+	static std::size_t ctr;
+};
+```
+对于任意给定的类型X，都有一个Foo<X>::ctr和一个Foo<X>::count()成员，且所有对象共享。
+
+#### 使用类的类型成员
+
+通过作用域运算符(::)来访问static成员和类型成员（比如类里面的子类类型）。在普通（非模板）代码中，编译器掌握类的定义。他知道通过(::)访问的是是类型还是static成员。
+
+在模板里存在困难，假设T是一个模板类型参数，当编译器遇到类似`T::mem`的代码时，他不知道mem时一个类型成员还是static数据成员，由于模板实例化时才知道，为了处理模板，编译器必须知道名字是否表示一个类型。
+```c++
+templcate <typename T>
+typename T::value_type top(const T& c) {
+	if (!c.empty()) {
+		return c.back();
+	} else {
+		return typename T::value_type(); // 这里调用构造函数，值初始化？
+	}
+}
+```

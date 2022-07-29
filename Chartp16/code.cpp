@@ -29,11 +29,23 @@ int print(std::initializer_list<int>& il) {
 	return 0;
 }
 
+template<typename T>
+class A {
+	public:
+		typename T::value_type top(const T& c) {
+			return typename T::value_type();
+		}
+	private:
+		T x;
+};
+
 int main() {
 	// std::cout << compare(1, 2) << std::endl;
 	std::cout << compare("haha", "hehe") << std::endl;
 	std::cout << compare1(1, 2) << std::endl;
 	std::initializer_list<int> L{1, 2, 3};
 	print(L);
+	A<int> a;
+	a.top(2);
 }
 
