@@ -128,7 +128,13 @@ private:
 
 在模板里存在困难，假设T是一个模板类型参数，当编译器遇到类似`T::mem`的代码时，他不知道mem时一个类型成员还是static数据成员，由于模板实例化时才知道，为了处理模板，编译器必须知道名字是否表示一个类型。
 ```c++
-templcate <typename T>
+// 比如Foo::mem
+// class Foo {
+// public:
+//		struct mem {};
+// };
+
+template <typename T>
 typename T::value_type top(const T& c) {
 	if (!c.empty()) {
 		return c.back();
@@ -137,3 +143,29 @@ typename T::value_type top(const T& c) {
 	}
 }
 ```
+#### 模板默认实参
+就像我们能为函数参数提供默认实参一样，我们也可以提供默认实参`(default  template argument)`.C++11我们可以为函数和类模板提供默认实参，而更早的C++标准只允许为类模板提供默认实参。
+```c++
+template <typename T, typename F = less<T>>
+int compare(const T& v1, const T& v2, F f = F()) {
+	if (f(v1, v2)) return -1;
+	if (f(v2, v1)) return 1;
+	return 0;
+}
+```
+#### 模板默认实参与类模板
+无论任何时候使用一个类模板，都需要在模板名之后接上尖括号。尖括号指出类必须从一个模板实例化而来。特别，如果一个类模板为所有模板参数都提供了了默认实参，而且我们希望使用默认参数，则必须在模板名之后跟一个尖括号对。
+```c++
+// 这里T = int，直接等于类型
+template<class T = int>
+class Numbers {
+public:
+	Numbers(T v = 0) : val(v) {}
+private:
+	T val;
+};
+
+Numbers<long double> lots;
+Numbers<> average;
+```
+
