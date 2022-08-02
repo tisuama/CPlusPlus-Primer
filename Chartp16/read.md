@@ -169,3 +169,19 @@ Numbers<long double> lots;
 Numbers<> average;
 ```
 
+#### 模板声明
+模板声明必须包含模板参数。
+```c++
+// 声明但是不定义compare
+template<typename T>
+int compare(const T&, const T&);
+template<typename T>
+class Blob;
+```
+模板的声明通常在一起放置在文件的开始位置，出现于任何使用这些模板的代码之前。
+
+
+### 成员模板
+一个类(无论是普通类还是类模板)可以包含本身是模板的成员函数。这种成员函数称为成员模板(`memberj template`)。成员模板不能是虚函数。
+
+#### 普通（非模板）类的成员模板

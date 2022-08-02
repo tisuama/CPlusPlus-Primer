@@ -39,13 +39,23 @@ class A {
 		T x;
 };
 
+// T等于某个类型
+template<class T = int>
+class Numbers {
+public:
+	Numbers(T v = 0) : val(v) {}
+private:
+	T val;
+};
+
 int main() {
 	// std::cout << compare(1, 2) << std::endl;
 	std::cout << compare("haha", "hehe") << std::endl;
 	std::cout << compare1(1, 2) << std::endl;
 	std::initializer_list<int> L{1, 2, 3};
 	print(L);
-	A<int> a;
-	a.top(2);
+
+	Numbers<long double> lots;
+	Numbers<> average;
 }
 
