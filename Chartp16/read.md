@@ -185,3 +185,22 @@ class Blob;
 一个类(无论是普通类还是类模板)可以包含本身是模板的成员函数。这种成员函数称为成员模板(`memberj template`)。成员模板不能是虚函数。
 
 #### 普通（非模板）类的成员模板
+
+类似`unque_ptr`所使用的默认删除器类型类型，如果我们希望删除器适用于任何类型，可以将运算符定义称一个模板。
+
+```c++
+// 函数对象类，定义类指针执行delete
+class DebugDelete {
+public:
+	DebugDelete(std::ostream& s = std::cerr): os(s) { }
+	template<typename T>
+	void operator() (T* p) const {
+		os << "deleteing unique_ptr" << std::endl;
+		delete p;
+	}
+
+private:
+	std::ostream &os;
+};
+```
+
