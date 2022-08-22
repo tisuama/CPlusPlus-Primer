@@ -228,5 +228,35 @@ Blob<T>::Blob(It b, It e): data(std::make_shared<std:vector<T>>(b, e))
 {}
 ```
 
+#### 控制实例化
+模板被使用时才会进行实例化，这一特性意味着，相同的实例可能出现在多个对象文件中。我两个或多个独立便利的源文件使用相同的模板，并且提供相同的模板参数时，每个文件就会有该模板的一个实例。
+在大系统中，多个文件中实例化相同的模板额外开销可能非常严重。在新标准中，可以通过显式实例化来避免这种开销。
+```c++
+extern template declaration; // 实例化声明
+template declaration;		 // 实例化定义
+```
 
+当编译器遇到extern模板声明时，他不会在本文件中生成实例化代码。使用extern表示承诺程序在其他位置有该实例化的一个非extern声明（定义）。
 
+由于编译器在使用一个模板时自动对其进行实例化，因此extern声明必须出现在任何使用此实例化版本之前。
+
+```c++
+extern template class Blob<string>;
+extern template int compare(const int&, const int&);
+
+Blob<string> sa1,sa2;
+// Blob<int> 及其接受initializer_list的构造函数在本文件中实例化
+Blob<int> a1 = {0, 1, 2, 3, 4, 5,};
+Blob<int> a2(a1); // 拷贝构造函数在本文件中实例化。
+int i = compare(a1[0], a2[0]); // 实例化出现在其他位置。
+
+实例化文件必须为每个在其他文件中声明为extern的类型和函数提供一个非extern的定义
+template 
+int compare(const int&, const int&)
+
+template
+class Blob<string>;
+```
+
+#### 实例化定义会实例化所有成员
+一个类模板实例化定义会实例化该模板的所有成员，包括内联成员函数。当编译器遇到一个实例化定义时，他不了解程序使用哪些成员函数。因此，与处理类模板的普通实例化不同，编译器会实例化该类的所有成员。
