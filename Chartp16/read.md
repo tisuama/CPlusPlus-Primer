@@ -202,5 +202,31 @@ public:
 private:
 	std::ostream &os;
 };
+
+可以将DebugDelete用作unique_ptr的删除器。
+
+std::unique_ptr<int, DebugDelete> p(new int, DebugDelete());
+std::unique_ptr<string, DebugDelete> p(new string, DebugDelete());
+``
+
+#### 类模板的成员模板
+对于类模板成员，我们也可以为其定义一个成员模板，在此情况下，类和成员各自有自己的、独立的参数。
+```c++
+template<typename T>
+class Blob {
+public:
+	template<typename It>
+	Blob(It b, It e);
+};
 ```
+与类模板的普通成员数据不同，成员模板是函数模板。当我们在类外定义一个成员模板时，必须同时为类模板和成员模板提供模板参数列表。
+
+```c++
+template<typename T>
+template<typename It>
+Blob<T>::Blob(It b, It e): data(std::make_shared<std:vector<T>>(b, e))
+{}
+```
+
+
 
