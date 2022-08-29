@@ -260,3 +260,80 @@ class Blob<string>;
 
 #### 实例化定义会实例化所有成员
 一个类模板实例化定义会实例化该模板的所有成员，包括内联成员函数。当编译器遇到一个实例化定义时，他不了解程序使用哪些成员函数。因此，与处理类模板的普通实例化不同，编译器会实例化该类的所有成员。
+
+
+#### 类型转换与模板类型参数
+从函数实参确认模板实参的过程被称为模板实参推断(`template argument deduction`)
+只有有限的几种类型转换会自动的适用于这些实参。编译器通常不会对实参进行类型转换，而是生成新的模板实例。
+
+与往常一样，顶层const无论是在形参中还是实参中都会被忽略。
+在其他类型转换中，能在调用中应用于函数模板的包括如下两项：
+>	1. const转化，可以将一个非const对象的引用或指针传递给一个const的引用或指针形参。
+	2. 如果函数形参不是引用类型，则可以对数组或函数类型的实参应用正常的指针转换。一个数组实参可以转换成指向其首元素的指针。类似的，一个函数实参可以转换成该函数类型的指针。
+其他任意类型的转换，如算术转化，派生类向基类转换，以及用户定义的转换，都不适用于函数模板
+
+```c++
+template<typename T>
+T fobj(T, T);
+
+template<typename T>
+T fref(const T&, const T&);
+
+std::string s1("value");
+const std::string s2("another value");
+fobj(s1, s2); // 调用fobj(string, string); const 被忽略
+fref(s1, s2); // 调用fref(const string&, const string&); 
+
+int a[10], b[20];
+fobj(a, b); // 调用fobj(int*, int*); 忽略了数据维度
+fref(a, b); // ERROR, a[10], b[20]不同的类型，数组维度不可忽略
+```
+
+#### 函数模板显式实参
+在某些情况下，编译器无法推断出模板实参的类型，在另外一些情况下，我们希望允许用户控制模板实例化。
+```c++
+template<typename T1, typename T2, typename T3>
+T1 sum(T2 x, T3 y) {
+	return x + y;
+}
+
+auto v3 = sum<long long>(i, lng); // T1通过用户指定，T2, T3编译器推断
+// =>  long long sum(int, long);
+```
+
+正常类型转换可以应用于：
+a) 显式指定的实参（如上面的例子）
+b) 普通函数实参（不涉及模板参数的部分) 
+```c++
+template<typename T>
+ostream& print(ostream& os, const T& obj);  // os可以正常转换
+```
+
+#### 尾置返回类型与转换
+当我们希望用户确定返回类型时，用显式模板实参表示函数模板返回值类型时有效的，但是其他情况下，要求显式指定模板实参
+会给用户添加额外负担，且可能不会带来什么好处。
+比如我们希望编写一个函数，接受表示序列的一对迭代器并返回序列中一个元素的引用。
+```c++
+template<typename T>
+??? &fcn(T beg, T end) {
+	return *beg;
+}
+
+在编译器遇到函数列表之前，beg都是不存在的，这时候需要使用尾置返回类型，它可以使用函数参数。
+template<typename T>
+auto fcn(T beg, T end) -> decltype(*beg) {
+	return *beg;
+}
+// decltype(*beg)推断出元素的引用作为函数返回值
+```
+
+##### 类型转换的标准库模板
+下面返回数据值得拷贝
+```c++
+template<typename T>
+auto fcn2(T beg, T end) ->
+	typename remove_reference<decltype(*beg)>::type {
+	return *beg;
+}
+// typename的作用是告诉编译器，type是一个类型
+```

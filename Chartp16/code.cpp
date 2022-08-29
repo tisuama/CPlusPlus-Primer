@@ -57,5 +57,11 @@ int main() {
 
 	Numbers<long double> lots;
 	Numbers<> average;
+
+	int v = 1;
+	int* p = &v;
+	const int* const p1 = p;
+	std::cout << *p1 << std::endl;
+	
 }
 
