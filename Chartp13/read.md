@@ -133,8 +133,8 @@ HasPtr& HasPtr::operator=(HasPtr rhs) {
 
 ```c++
 int i = 42;
-int& r = i;     // ERROR
-int&& rr = i;   // OK
+int& r = i;     // OK
+int&& rr = i;   // ERROR
 int& r2 = i * 42; // ERROR
 const int& r3 = i * 42;  // OK
 int&& rr2 = i * 42; //OK
