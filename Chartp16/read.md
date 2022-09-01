@@ -346,7 +346,7 @@ auto fcn2(T beg, T end) ->
 template<typename T>
 int compare(const T&, const T&);
 
-int (*pf1)(const int&, const int& = compare;
+int (*pf1)(const int&, const int&) = compare;
 // pf1中参数类型决定了T模板实参的类型
 ```
 
@@ -396,3 +396,12 @@ f3(i)的实例化结果可能为: void f3<int&>(int& &&) => void f3<int&>(int&)
 这两个规则暗示，我们可以将任意类型的实参传递给T&&类型的函数参数。对于这种类型的参数，显然既可以传递右值，又可以传递左值。
 
 *实际情况中，右值引用通常用于两种情况：模板转发其实参或模板被重载。*
+```c++
+template<typename T>
+void f(T&&); 	  // 绑定到非const右值
+
+template<typename T> 
+void f(const T&); // 绑定到左值和const右值
+```
+#### 理解std::move
+
