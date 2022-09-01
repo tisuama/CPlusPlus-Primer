@@ -79,7 +79,7 @@ for (size_t i = 0; i != blobs.size(); i++) {
 ```
 这里Blob类只实例化了它和三个成员函数`operator[]`, `size`和接受`initializer_list<int>`的构造函数
 
->	默认情况下，对于一个实例化了的类模板，其成员函数只有在使用时才被实例化。
+>	默认情况下，对于一个`实例化了`的类模板，其成员函数只有在使用时才被实例化。
 
 
 #### 在类代码内简化模板类名的使用
@@ -120,6 +120,8 @@ private:
 	static std::size_t ctr;
 };
 ```
+
+与其他任何static数据成员相同，模板类的每个static数据成员必须有且只有一个定义。但是，类模板的每个实例都有一个独有的static对象。因此，与定义模板的成员函数类似，我们将static成员也定义称模板。
 对于任意给定的类型X，都有一个Foo<X>::ctr和一个Foo<X>::count()成员，且所有对象共享。
 
 #### 使用类的类型成员
@@ -129,10 +131,10 @@ private:
 在模板里存在困难，假设T是一个模板类型参数，当编译器遇到类似`T::mem`的代码时，他不知道mem时一个类型成员还是static数据成员，由于模板实例化时才知道，为了处理模板，编译器必须知道名字是否表示一个类型。
 ```c++
 // 比如Foo::mem
-// class Foo {
-// public:
-//		struct mem {};
-// };
+class Foo {
+public:
+ 	struct mem {};
+};
 
 template <typename T>
 typename T::value_type top(const T& c) {
@@ -203,11 +205,10 @@ private:
 	std::ostream &os;
 };
 
-可以将DebugDelete用作unique_ptr的删除器。
-
+// 可以将DebugDelete用作unique_ptr的删除器。
 std::unique_ptr<int, DebugDelete> p(new int, DebugDelete());
 std::unique_ptr<string, DebugDelete> p(new string, DebugDelete());
-``
+```
 
 #### 类模板的成员模板
 对于类模板成员，我们也可以为其定义一个成员模板，在此情况下，类和成员各自有自己的、独立的参数。
@@ -233,7 +234,7 @@ Blob<T>::Blob(It b, It e): data(std::make_shared<std:vector<T>>(b, e))
 在大系统中，多个文件中实例化相同的模板额外开销可能非常严重。在新标准中，可以通过显式实例化来避免这种开销。
 ```c++
 extern template declaration; // 实例化声明
-template declaration;		 // 实例化定义
+template declaration;	 // 实例化定义
 ```
 
 当编译器遇到extern模板声明时，他不会在本文件中生成实例化代码。使用extern表示承诺程序在其他位置有该实例化的一个非extern声明（定义）。
@@ -241,7 +242,7 @@ template declaration;		 // 实例化定义
 由于编译器在使用一个模板时自动对其进行实例化，因此extern声明必须出现在任何使用此实例化版本之前。
 
 ```c++
-extern template class Blob<string>;
+extern template class Blob<string>; // 实例化声明
 extern template int compare(const int&, const int&);
 
 Blob<string> sa1,sa2;
@@ -255,11 +256,12 @@ template
 int compare(const int&, const int&)
 
 template
-class Blob<string>;
+class Blob<string> // 实例化类模板的所有成员;
 ```
 
-#### 实例化定义会实例化所有成员
-一个类模板实例化定义会实例化该模板的所有成员，包括内联成员函数。当编译器遇到一个实例化定义时，他不了解程序使用哪些成员函数。因此，与处理类模板的普通实例化不同，编译器会实例化该类的所有成员。
+当编译器遇到一个实例化定义时，他为其生成代码。
+
+一个类模板实例化定义会实例化该模板的所有成员，包括内联成员函数。当编译器遇到一个实例化定义时，他不了解程序使用哪些成员函数。因此，与处理类模板的普通实例化不同，编译器会实例化该类的所有成员。因此，与处理类模板的普通实例化不同，编译器会实例化该类所有成员。即使我们不使用某些成员，它也会被实例化。
 
 
 #### 类型转换与模板类型参数
