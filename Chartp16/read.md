@@ -340,6 +340,10 @@ auto fcn2(T beg, T end) ->
 }
 // typename的作用是告诉编译器，type是一个类型
 ```
+这里标准类型转换规则：
+>	remove_reference<T>  
+-	若T为X&或X&&，则remove_reference<T>::type为X
+-	否则, remove_reference<T>::type为T
 
 #### 函数指针和实参推断
 
@@ -405,5 +409,72 @@ void f(T&&); 	  // 绑定到非const右值
 template<typename T> 
 void f(const T&); // 绑定到左值和const右值
 ```
-#### 理解std::move
+### 理解std::move
+标准库`move`函数是使用右值引用模板的一个很好的例子。我们不能直接将一个右值引用绑定到一个左值上，但是可以用move获得一个绑定到左值的右值引用。由于move本质上可以接受任意类型的实参，因此我们不会惊讶于它是一个函数模板。
+
+```c++
+// std::move实现
+template<typename T>
+typename remove_reference<T>::type&& move(T&& t) {
+	return static_cast<typename remove_reference<T>::type&&>(t);
+}
+```
+
+首先move的函数参数`T&&`是一个指向模板类型参数的右值引用。通过引用折叠，此参数可以与任何类型匹配。特别是，我们既可以传递给move一个左值，也可以传递给它一个右值。
+```c++
+std::string s1("hi"), s2;
+s2 = std::move(std::string("byte")); // 推断为move(std::string && t) => move(std::string&& t);
+s2 = std::move(s1);	// 推断为move(std::string& && t) => move(std::string& t);
+```
+#### 不使用move，从左值static_cast到一个右值也是允许的
+虽然不能隐式的将一个左值转换为右值引用，但是可以使用static_cast显式的将一个左值转换为右值引用。
+
+对于操作右值引用的代码来说，将一个右值引用绑定到一个左值允许他们截断左值。
+
+> A = B：A绑定到B，B赋值给A
+
+
+### 转发std::forward
+某些函数需要将其一个或多个实参连同类型不变的转发给其他函数。这种情况下，我们需要保持被转发实参所有性质，包括实参类型是否是const以及实参是左值还是右值。
+
+```c++
+// flip是一个不完整的实现：顶层const和引用丢失
+template<typename F, typename T1, typename T2>
+void flip(F f, T1 t1, T2 t2) {
+	f(t2, t1); // 注意这里倒转了t2、t1
+}
+
+void f(int v1, int& v2) {
+	std::cout << v1 << " " << ++v2 << std::endl;
+} 
+
+int i = 1, j = 1;
+f(42, i); // i的值变成2
+flip(f, j, 42); // f不会改变j，因为flip => void flip(void(*fn)(int, int&), int t1, int t2);
+```
+
+#### 定义能保持类型的函数参数
+通过将一个函数定义为一个指向模板类型参数的右值引用，我们可以保持其对应是实参的所有类型。而底层引用参数（无论是左值还是右值）使得我们保持其对应的const属性，因为在引用中，const是底层的.
+```c++
+template<typename F, typename T1, typename T2>
+void flip(F f, T1&& t1, T2&& t2) {
+	f(t2, t1);
+}
+```
+想想调用flip(f, j 42)发生了什么？
+
+这个版本的flip解决了一半问题。它对于接受一个左值引用的函数工作的很好，但不能用于接受右值引用参数的函数。例如:
+```c++
+void g(int&& i, int& j) {
+	std::cout << i << " " << j << std::endl;
+}
+```
+当我们试图通过flip调用g时，则参数t2将被传递给g的右值引用参数。即使我们传递一个右值被flip。
+```
+flip(g, i, 42); // ERROR，不能从左值实例化int&&
+```
+### 在调用中使用std::forward保持类型信息
+
+我们可以使用一个名为std::forward的新标准库设施来传递flip参数，它能保持原始实参类型。std::forward必须通过显式模板实参来调用。forward返回该显式实参类型的右值引用。即std::forward<T>返回类型时T&&。
+
 
