@@ -461,7 +461,7 @@ void flip(F f, T1&& t1, T2&& t2) {
 	f(t2, t1);
 }
 ```
-想想调用flip(f, j 42)发生了什么？
+想想调用flip(f, j, 42)发生了什么？
 
 这个版本的flip解决了一半问题。它对于接受一个左值引用的函数工作的很好，但不能用于接受右值引用参数的函数。例如:
 ```c++
@@ -477,4 +477,21 @@ flip(g, i, 42); // ERROR，不能从左值实例化int&&
 
 我们可以使用一个名为std::forward的新标准库设施来传递flip参数，它能保持原始实参类型。std::forward必须通过显式模板实参来调用。forward返回该显式实参类型的右值引用。即std::forward<T>返回类型时T&&。
 
+通常情况下，我们使用forward传递那些定义为模板类型参数的右值引用的函数参数。通过返回类型上的引用折叠，forward可以保持给定实参的左值/右值属性。
+```c++
+template<typename T> intermediary(T && arg) {
+	finalFcn(std::forward<T>(arg);
+}
+```
+
+使用forward重写翻转函数:
+```c++
+template<typename F, typename T1, typename T2>
+void flip(F f, T1&& t1, T2&& t2) {
+	f(std::forward<T2>(t2), std::forward<T1>(t1));
+}
+```
+### 可变参数模板
+
+一个可变参数模板就是一个接受可数目参数的模板函数或者模板类。
 
