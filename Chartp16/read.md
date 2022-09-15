@@ -491,7 +491,40 @@ void flip(F f, T1&& t1, T2&& t2) {
 	f(std::forward<T2>(t2), std::forward<T1>(t1));
 }
 ```
+### 模板重载
+函数模板可以被另一个模板或者普通非模板函数重载，与往常一样，名字相同的函数必须具有不同数量或类型的参数。
+函数匹配规则：
+-	如果同样好的函数只有一个是非模板函数，则选择此函数
+-	如果同样好的函数中没有非模板函数，而有多个匹配的函数模板，选择更特例化的模板。
+-	否则此调用有歧义。
+
+
 ### 可变参数模板
 
 一个可变参数模板就是一个接受可数目参数的模板函数或者模板类。
+`class...`或者`typename...`指出接下来参数表述零个或多个类型的列表；一个类型后面跟一个省略号表示零个或多个给定类型的非类型参数列表。
+
+如果一个参数的类型是模板参数包，则此参数也是一个函数参数包。
+```c++
+template<typename T, typename... Args>
+void foo(const T& t, const Args& ...rest);
+
+int i = 0; double d = 3.14; string s = "hello";
+foo(i, d, ,42, s); => void foo(const int&, const double&, const int&, const string&);
+foo(s, 42, "hi");  => void foo(const string&, const int&, const char[3]&);
+foo("hi"); // 空包 => void foo(const char[3]&);
+```
+
+>	sizeof...运算符： 当我们需要知道包中有多少元素时，可以使用sizeof...运算符。sizeof...返回一个常量表达式，而且不会对其实参求值。
+```c++
+template<typename... Args> 
+void g(Args... args) {
+	std::cout << sizeof...(Args) << std::endl; // 类型参数数目
+	std::cout << sizeof...(args) << std::endl; // 函数参数数目
+}
+```
+
+
+
+
 

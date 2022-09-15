@@ -77,6 +77,19 @@ void f3(T&& x) {
 	std::cout << x << std::endl;
 }
 
+// 可变参数模板
+template<typename T>
+std::ostream& printv(std::ostream& os, const T& t) {
+	return os << t;
+}
+
+template<typename T, typename... Args>
+std::ostream& printv(std::ostream& os, const T& t, const Args&... rest) {
+	os << t << ",";
+	return printv(os, rest...);
+}
+
+
 int main() {
 	// std::cout << compare(1, 2) << std::endl;
 	std::cout << compare("haha", "hehe") << std::endl;
@@ -104,6 +117,9 @@ int main() {
 	// int&& rr = x;	// ERROR
 	// const int z = 2;
 	// f1(y, z);
-	
+		
+	std::cout << "=== varibale template ===" << std::endl;
+	std::string s = "haha";
+	printv(std::cout, x, s, 42);	
 }
 
