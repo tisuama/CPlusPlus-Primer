@@ -461,7 +461,7 @@ void flip(F f, T1&& t1, T2&& t2) {
 	f(t2, t1);
 }
 ```
-想想调用flip(f, j, 42)发生了什么？
+想想调用flip(f, j, 42)发生了什么？将传递给t1一个左值j。所以当递增v2时，j的值也发生改变。
 
 这个版本的flip解决了一半问题。它对于接受一个左值引用的函数工作的很好，但不能用于接受右值引用参数的函数。例如:
 ```c++
@@ -469,10 +469,12 @@ void g(int&& i, int& j) {
 	std::cout << i << " " << j << std::endl;
 }
 ```
-当我们试图通过flip调用g时，则参数t2将被传递给g的右值引用参数。即使我们传递一个右值被flip。
+当我们试图通过flip调用g时，则参数t2将被传递给g的右值引用参数。即使我们传递一个右值给flip，传递给g的将是flip的t2参数。
+函数参数与其他任何变量一样，都是左值表达式，因此，flip中对g的调用将传递给g右值引用参数一个左值。
 ```
 flip(g, i, 42); // ERROR，不能从左值实例化int&&
 ```
+
 ### 在调用中使用std::forward保持类型信息
 
 我们可以使用一个名为std::forward的新标准库设施来传递flip参数，它能保持原始实参类型。std::forward必须通过显式模板实参来调用。forward返回该显式实参类型的右值引用。即std::forward<T>返回类型时T&&。
@@ -506,8 +508,8 @@ void flip(F f, T1&& t1, T2&& t2) {
 
 如果一个参数的类型是模板参数包，则此参数也是一个函数参数包。
 ```c++
-template<typename T, typename... Args>
-void foo(const T& t, const Args& ...rest);
+template<typename T, typename... Args> // 模板参数包
+void foo(const T& t, const Args& ...rest); // 函数参数包
 
 int i = 0; double d = 3.14; string s = "hello";
 foo(i, d, ,42, s); => void foo(const int&, const double&, const int&, const string&);
