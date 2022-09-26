@@ -506,6 +506,8 @@ void flip(F f, T1&& t1, T2&& t2) {
 一个可变参数模板就是一个接受可数目参数的模板函数或者模板类。
 `class...`或者`typename...`指出接下来参数表述零个或多个类型的列表；一个类型后面跟一个省略号表示零个或多个给定类型的非类型参数列表。
 
+存在两种参数包：模板参数包，表示零个或多个模板参数；函数参数包，表示零个或多个函数参数。
+
 如果一个参数的类型是模板参数包，则此参数也是一个函数参数包。
 ```c++
 template<typename T, typename... Args> // 模板参数包
@@ -525,8 +527,72 @@ void g(Args... args) {
 	std::cout << sizeof...(args) << std::endl; // 函数参数数目
 }
 ```
+### 包扩展
+
+对于一个参数包，除了获取其大小外，我们唯一能做的事情就是扩展(expand)。扩展一个包就是将它分解为构成的元素，对于每个元素应用模式，获得拓展后的列表。我们通过模式右边放一个省略号(`...`)
+来触发扩展操作。
+```c++
+template<typename T, typename... Args>
+ostream& print(ostream& os, const T& t, const Args&... rest) { // 第一次包扩展
+	os << t << ", ";
+	return print(os, rest...); // 第二次包扩展
+}
+```
+第一次包扩展操作扩展模板参数包，扩展Args，编译器将模式(`const Args&`)应用到模板参数包Args中的每个元素。因此，此模式扩展结果是一个逗号分割的零个或多个类型的列表，每个类型都形如`const type&`。例如：
+```c++
+print(cout, i, s, 42);
+	||
+	\/
+第一次扩展: print(ostream&, const int&, const std::string&, const int&);
+第二次扩展: print(os, s, 42);
+```
+
+第二个扩展发生在对print的调用中，在此情况下，模式是函数参数包的名字（即reset)。此模式扩展出一个由包中元素组成的，逗号分割的列表。
+
+### 转发参数包
+保持类型信息是一个两阶段的过程。首先，为了保持实参中的类型信息，必须将empace_back的函数参数定义为模板类型参数的右值引用。
+```c++
+calss StrVec {
+public:
+	template<class... Args>
+	void emplace_back(Args&&...) {
+		chk_n_alloc();
+		alloc.construct(first_free++, std::forward<Args>(args)...);
+	}
+};
+// 模板参数包扩展中的模式是&&，意味着每个函数参数将是一个指向其对应实参的右值引用。
+```
+
+其次，当emplace_back将这些实参传递给construct时，我们必须使用forward来保持其实参的原始类型。
 
 
+### 模板特例化
+
+```c++
+// 第一种:
+template<typename T> 
+int compare(const T&, const T&); // 可以比较任意两个类型
+
+// 第二种:
+template<size_t N, size_t M>
+int compare(const char(&)[N], const char(&)[M])；  // 处理字符串常量
+
+const char* p1 = "hi", *p2 = "mon";
+compare(p1, p2); // 第一个版本
+compare("hi", "mom"); // 第二个版本
+```
+只有当我们传递给compare一个字符串字面常量或者一个数组时，编译器才会调用接受两个非类型模板参数的版本。如果我们传递给它字符指针，就会调用第一个版本。
+
+为了处理字符指针，我们可以为第一个版本的compare定义个模板特例化(template sperialization)版本。一个特例化版本就是模板的一个独立的定义，在其中一个或多个模板参数被指定为特定的类型。
 
 
+#### 定义模板特例化
+```c++
+template<>
+int compare(const char* const& p1, const chara* const &p2) {
+	return strcmp(p1, p2);	
+}
+```
+理解此特例化最困难的之处是函数参数类型。当我们定义一个特例化版本时，函数参数类型必须与一个先前声明的模板中对应的类型匹配。
+我们定义此函数一个特例化版本，其中T为`const char*`。我们的函数要求一个指向此类型const版本的引用。因此特例化版本中使用的类型是`const char* const &`: 一个指向const char的const 指针的引用。
 

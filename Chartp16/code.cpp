@@ -79,14 +79,14 @@ void f3(T&& x) {
 
 // 可变参数模板
 template<typename T>
-std::ostream& printv(std::ostream& os, const T& t) {
-	return os << t;
+void printv(std::ostream& os, const T& t) {
+	os << t;
 }
 
 template<typename T, typename... Args>
-std::ostream& printv(std::ostream& os, const T& t, const Args&... rest) {
+void printv(std::ostream& os, const T& t, const Args&... rest) {
 	os << t << ",";
-	return printv(os, rest...);
+ 	printv(os, rest...);
 }
 
 
