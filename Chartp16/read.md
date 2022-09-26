@@ -477,7 +477,7 @@ flip(g, i, 42); // ERROR，不能从左值实例化int&&
 
 ### 在调用中使用std::forward保持类型信息
 
-我们可以使用一个名为std::forward的新标准库设施来传递flip参数，它能保持原始实参类型。std::forward必须通过显式模板实参来调用。forward返回该显式实参类型的右值引用。即std::forward<T>返回类型时T&&。
+我们可以使用一个名为std::forward的新标准库设施来传递flip参数，它能保持原始实参类型。std::forward必须通过显式模板实参来调用。forward返回该显式实参类型的右值引用。即std::forward<T>返回类型是T&&。
 
 通常情况下，我们使用forward传递那些定义为模板类型参数的右值引用的函数参数。通过返回类型上的引用折叠，forward可以保持给定实参的左值/右值属性。
 ```c++
