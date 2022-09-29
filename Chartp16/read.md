@@ -606,7 +606,52 @@ int compare(const char* const& p1, const chara* const &p2) {
 
 一个特例化的hash类必须定义：
 >	1. 一个重载的调用运算符，他接受一个容器关键字类型的对象，返回一个size_t
-	2. 两个类型成员，`result_type`和`argument_type`，分别为运算符的返回参数类型
+	2. 两个类型成员，`result_type`和`argument_type`，分别为运算符的返回类型和参数类型
 	3. 默认构造函数和拷贝赋值运算符
 
 
+值得注意的是，我们的hash函数计算所有三个数据成员的哈希值，从而与我们为`Sale_data`定义的`operator==`是兼容的。默认情况下，为了处理特定的关键字类型，无需容器会组合使用`key_type`
+对应的特例化hash版本和`key_type`上的相等运算符。
+```c++
+// 使用hash<Sale_data>和Sale_data的operator==
+unordered_set<Sale_data> data;
+```
+
+### 类模板部分特例化
+与函数模板不同，类模板特例化不必为所有模板参数提供实参。我们可以指定一部分而非所有模板参数。
+
+```c++
+template<class T>
+struct remove_reference {
+	typedef T type;
+};
+
+// 部分特例化版本
+template<class T>
+struct remove_reference<T&> { // 左值引用
+	typedef T type;
+};
+
+
+template<class T>
+struct remove_reference<T&&> { // 右值引用
+	typedef T type;
+};
+```
+由于一个部分特例化的版本本质上是一个模板，与往常一样，我们首先定义模板参数。
+
+#### 特例化成员而不是类
+
+我们可以只特例化成员函数而不是特例化整个模板。
+```c++
+template<typename T>
+struct Foo {
+	Foo(const T& t = T()): mem(t) {}
+	void Bar() { }
+	T mem;
+};
+
+template<>	// 我们正在特例化一个模板
+void Foo<int>::Bar() { // 我们正在特化Foo<int>成员的Bar
+}
+```

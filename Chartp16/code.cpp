@@ -89,10 +89,6 @@ void printv(std::ostream& os, const T& t, const Args&... rest) {
  	printv(os, rest...);
 }
 
-struct X {
-	int x;
-	int y;
-};
 
 int main() {
 	// std::cout << compare(1, 2) << std::endl;
@@ -126,10 +122,5 @@ int main() {
 	std::string s = "haha";
 	printv(std::cout, x, s, 42);	
 
-	std::cout << "=== Test ===" << std::endl;
-	X xx;
-	xx.x = 2, xx.y = 3;
-	X yy = xx;
-	std::cout << (x == y) << std::endl;
 }
 
