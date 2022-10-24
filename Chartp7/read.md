@@ -156,7 +156,7 @@ Sales_data item2 = nullptr;  // ERROR，隐式初始化，这里直接调用构�
 ```
 
 #### constexpr构造函数
-尽管构造函数不能是const的，但是字面值常量类的构造函数可以使constexpr函数。
+尽管构造函数不能是const的，但是字面值常量类的构造函数可以是constexpr函数。
 constexpr 构造函数必须初始化所有数据成员，初始值或者使用constexpr构造函数，或者是一条常量表达式。
 
 #### 类的静态成员
