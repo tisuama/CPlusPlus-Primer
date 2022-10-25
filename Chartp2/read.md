@@ -54,6 +54,7 @@ const int& r = ci;   // 底层const
 底层const限制：当执行对象拷入如拷出操作时，拷入和拷出对象必须具有相同的底层const资格。
 
 6. constexpr：指值不会改变，且在编译过程中就能计算得到结果的表达式。
+一个对象是否为常量表达式由它的数据类型和初始值共同决定。
 ```c++
 const int max_files = 20; // 常量表达式
 const int limit = max_files + 1; // 常量表达式
