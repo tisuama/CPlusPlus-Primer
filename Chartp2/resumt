@@ -1,0 +1,77 @@
+% !TEX TS-program = xelatex
+% !TEX encoding = UTF-8 Unicode
+% !Mode:: "TeX:UTF-8"
+
+\documentclass{resume}
+\usepackage{zh_CN-Adobefonts_external} % Simplified Chinese Support using external fonts (./fonts/zh_CN-Adobe/)
+%\usepackage{zh_CN-Adobefonts_internal} % Simplified Chinese Support using system fonts
+\usepackage{linespacing_fix} % disable extra space before next section
+\usepackage{cite}
+
+\begin{document}
+\pagenumbering{gobble} % suppress displaying page number
+
+\name{李正正}
+
+\basicInfo{
+  \email{zhengzhengli525@163.com} \textperiodcentered\ 
+  \phone{(+86) 17610825525} \textperiodcentered\ 
+  \faWechat{Tisuama}}
+ 
+\section{\faGraduationCap\  教育背景}
+\datedsubsection{\textbf{北京邮电大学}  \space\textsc{硕士}     (计算机科学与技术)}{2017 -- 2020}
+\datedsubsection{\textbf{武汉科技大学}  \space\textsc{本科}     (计算机科学与技术)}{2013 -- 2017}
+\vspace*{5pt}
+
+\section{\faCogs\ IT 技能}
+% increase linespacing [parsep=0.5ex]
+\begin{itemize}[parsep=0.5ex]
+  \item 熟悉Rocksdb/Leveldb存储引擎
+  \item 熟悉Raft协议，了解Paxos协议
+  \item 熟练使用C/C++编程语言，掌握常见算法和数据结构
+  \item 熟悉Linux操作系统原理，如文件、IO、内存、线程
+  \item 熟练使用多线程编程，以及常见的性能诊断、调优方法
+\end{itemize}
+
+\section{\faFlag\  工作经历}
+\datedsubsection{\textbf{深圳市深信服科技有限公司}} {2020.10  ---  现在}
+\datedsubsection{\text{存储架设部(凤凰团队存储组)}} {后台开发工程师}
+\vspace*{5pt}
+
+\section{\faUsers\ 实习/项目经历}
+\datedsubsection{\textbf{项目一：高性能分布式}}
+\text{分布式KV是重要的存储组件，承载了对象、文件、索引以及AppendOnly等模块的元数据。个人主要负责日常维护，以及向高性能方向优化。}
+\vspace*{3pt}
+\begin{itemize}
+  \item Raft日志改造。利用组提交等手段提升Raft日志写入性能以及减少CPU消耗。
+  \vspace*{3pt}
+  \item 参与KV分离模块实现。受限于SSD使用空间的使用，进一步开发了KV分离模块，位于SSD上的SST文件只存储key以及value的索引，而大value数据存储在blob文件中，当SSD空间不够时，将冷的blob文件下沉到RADOS中，部分热的blob文件则保留在SSD中，同时保证时延稳定。
+  \vspace*{3pt}
+  \item KV接口功能改进。提支持MultiCF，不同业务写入不同的SST，物理隔离。同时通过细粒度的前缀划分，进一步减少写放大。
+  \vspace*{3pt}
+  \item 网络以及线程模型改造。利用基于RDMA的RPC框架，减少大部分的网络时间消耗。同时对Rocksdb的MultiGet流程进行改造，基于协程实现并发异步IO，配合RPC框架提供的SPDK线程，提升5倍的读吞吐。
+  \vspace*{5pt}
+\end{itemize}
+
+\datedsubsection{\textbf{项目二：AppendOnly + 重删压缩}}
+\text{分布式KV是重要的存储组件，承载了对象、文件、索引以及AppendOnly等模块的元数据。个人主要负责日常维护，以及向高性能方向优化。}
+\vspace*{3pt}
+\begin{itemize}
+  \item Raft日志改造。利用组提交等手段提升Raft日志写入性能以及减少CPU消耗。
+  \vspace*{3pt}
+  \item 参与KV分离模块实现。受限于SSD使用空间的使用，进一步开发了KV分离模块，位于SSD上的SST文件只存储key以及value的索引，而大value数据存储在blob文件中，当SSD空间不够时，将冷的blob文件下沉到RADOS中，部分热的blob文件则保留在SSD中，同时保证时延稳定。
+  \vspace*{3pt}
+  \item KV接口功能改进。提支持MultiCF，不同业务写入不同的SST，物理隔离。同时通过细粒度的前缀划分，进一步减少写放大。
+  \vspace*{3pt}
+  \item 网络以及线程模型改造。利用基于RDMA的RPC框架，减少大部分的网络时间消耗。同时对Rocksdb的MultiGet流程进行改造，基于协程实现并发异步IO，配合RPC框架提供的SPDK线程，提升5倍的读吞吐。
+  \vspace*{5pt}
+\end{itemize}
+
+
+
+
+%% Reference
+%\newpage
+%\bibliographystyle{IEEETran}
+%\bibliography{mycite}
+\end{document}
